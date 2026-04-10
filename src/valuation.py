@@ -7,7 +7,7 @@ def estimate_nav_change(holdings: List[Dict], prices: Dict[str, Dict]) -> Dict:
     
     Args:
         holdings: List of dicts, each having {'code', 'weight', ...}
-        prices: Dict of {code: {'change': float, ...}}
+        prices: Dict of {code: {'pct_change': float, 'change': float, ...}}
         
     Returns:
         Dict: {
@@ -33,11 +33,12 @@ def estimate_nav_change(holdings: List[Dict], prices: Dict[str, Dict]) -> Dict:
         price_info = prices.get(lookup_code)
         
         if price_info:
-            change = price_info.get('change', 0.0)
+            # Prefer the explicit percentage field and keep `change` as a backward-compatible fallback.
+            change_pct = price_info.get('pct_change', price_info.get('change', 0.0))
             current_price = price_info.get('price', 0.0)
             name = price_info.get('name', item.get('name', 'Unknown'))
             
-            weighted_change = change * weight
+            weighted_change = change_pct * weight
             total_weighted_change += weighted_change
             total_weight += weight
             
@@ -46,7 +47,7 @@ def estimate_nav_change(holdings: List[Dict], prices: Dict[str, Dict]) -> Dict:
                 'name': name,
                 'weight': weight,
                 'price': current_price,
-                'change': change,
+                'change': change_pct,
                 'contribution': weighted_change # Contribution to the sum, logic-wise
             })
         else:

@@ -372,6 +372,7 @@ def get_realtime_stock_prices(stock_codes: List[str]) -> Dict[str, Dict]:
     """
     Fetches real-time stock prices from Sina Finance.
     Accepts specific Sina codes (e.g. sh600519, rt_hk00700, gb_aapl).
+    Returns percentage change in `pct_change`. `change` is kept as a backward-compatible alias.
     """
     if not stock_codes:
         return {}
@@ -438,6 +439,7 @@ def get_realtime_stock_prices(stock_codes: List[str]) -> Dict[str, Dict]:
                     results[key] = {
                         'name': name,
                         'price': price,
+                        'pct_change': change_pct,
                         'change': change_pct
                     }
                     
